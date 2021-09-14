@@ -1,0 +1,17 @@
+{
+    "name": "tiago/ebanx-teste",
+    "autoload": {
+        "psr-4": {
+            "Tiago\\EbanxTeste\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Tiago França",
+            "email": "dev@tiagofranca.com"
+        }
+    ],
+    "require": {
+        "larapack/dd": "^1.1"
+    }
+}

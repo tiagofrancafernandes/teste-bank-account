@@ -83,6 +83,7 @@ class AccountController
 
         if(
             !$type
+            || !is_string($type)
             || !$destination
             || !$amount
             || !is_numeric($amount)
@@ -94,8 +95,8 @@ class AccountController
 
         if($account)
         {
-            $balance = $account['balance'] = ($account['balance'] ?? 0) + $amount;
-            $this->models['account_model']->updateAccount($destination, $account);
+            $operation_result = $this->runOperationByType($destination, $type, $account, $amount);
+            $balance = $operation_result['balance'] ?? 0;
         }
         else
         {
@@ -112,5 +113,19 @@ class AccountController
         ];
 
         return ResponseManager::basicOutput(201, json_encode($data), 'json');//TODO fazer retornar o valor real
+    }
+
+    protected function runOperationByType(int $account_id, string $type, array $account, int $amount)
+    {
+        $operation_types = [
+            'deposit',
+        ];
+
+        if(!in_array($type, $operation_types))
+            return [];
+
+        $account['balance'] = ($account['balance'] ?? 0) + $amount;
+        $this->models['account_model']->updateAccount($account_id, $account);
+        return $account;
     }
 }

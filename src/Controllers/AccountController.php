@@ -41,6 +41,7 @@ class AccountController
      */
     public function reset(array $request_data)
     {
+        $this->models['account_model']->resetAllData('DROP_ALL');
         return ResponseManager::basicOutput(200, 'OK');
     }
 

@@ -29,4 +29,12 @@ class Account extends ModelBase
 
         return $account ?? null;
     }
+
+    public function resetAllData(string $confirmation)
+    {
+        if($confirmation !== 'DROP_ALL')
+            return;
+
+        $this->clearOrCreateFile();
+    }
 }

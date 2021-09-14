@@ -16,9 +16,11 @@ class AccountController
     public function index()
     {
         return ResponseManager::json([
-            'data' => [
+            'data'          => [
                 'Hello' => 'EBANX',
             ],
+            'success'       => true,
+            'error_message' => "Route not found!",
         ], 301);
     }
 
@@ -32,7 +34,11 @@ class AccountController
     public function reset()
     {
         return ResponseManager::json([
-            'reset' => true,
+            'data'          => [
+                'reset' => true,
+            ],
+            'success'       => true,
+            'error_message' => "Route not found!",
         ], 200);
     }
 }

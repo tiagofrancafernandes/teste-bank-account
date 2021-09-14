@@ -23,10 +23,18 @@ class RouteManager
         $route = $routes[$method][$path] ?? null;
 
         if(!$route)
-            throw new \Exception("Route not found!", 1);
+            return ResponseManager::json([
+                'data'          => [],
+                'success'       => false,
+                'error_message' => "Route not found!",
+            ], 404);
 
         if(!is_array($route) || !(count($route) >= 2))
-            throw new \Exception("Invalid route!", 1);
+            return ResponseManager::json([
+                'data'          => [],
+                'success'       => false,
+                'error_message' => "Invalid route!",
+            ], 500);
 
         return (new $route[0]())->{$route[1]}($route[2] ?? null);
     }

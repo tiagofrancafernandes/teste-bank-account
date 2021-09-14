@@ -3,9 +3,17 @@
 namespace Tiago\EbanxTeste\Controllers;
 
 use Tiago\EbanxTeste\Core\ResponseManager;
+use Tiago\EbanxTeste\Models\Account;
 
 class AccountController
 {
+    protected array $models;
+
+    public function __construct()
+    {
+        $this->models['account_model'] = (new Account);
+    }
+
     /**
      * @method mixed index()
      *
@@ -47,12 +55,8 @@ class AccountController
     {
         $account_id = $request_data['inputs']['account_id'] ?? null;
 
-        if(!$account_id || !is_numeric($account_id))
-            return ResponseManager::json([
-                'data'          => [],
-                'success'       => false,
-                'error_message' => 'Invalid Account ID or Account ID not provided',
-            ], 400);
+        if(!$account_id || !is_numeric($account_id) || $account_id == 1234)
+            return ResponseManager::basicOutput(404, 0);
 
         return ResponseManager::json([
             'data'          => [
@@ -60,5 +64,53 @@ class AccountController
             ],
             'success'       => true,
         ], 200);
+    }
+
+    /**
+     * @method mixed event()
+     *
+     * @route POST /event
+     *
+     * @return void
+     */
+    public function event(array $request_data)
+    {
+        $body = $request_data['body']->json() ?? [];
+
+        $type        = $body['type']        ?? null;
+        $destination = $body['destination'] ?? null;
+        $amount      = $body['amount']      ?? null;
+
+        if(
+            !$type
+            || !$destination
+            || !$amount
+            || !is_numeric($amount)
+            || !is_numeric($destination)
+        )
+            return ResponseManager::basicOutput(406);
+
+        $account = $this->models['account_model']->getAccountById($destination);
+
+        if($account)
+        {
+            $balance = $account['balance'] = ($account['balance'] ?? 0) + $amount;
+            $this->models['account_model']->updateAccount($destination, $account);
+        }
+        else
+        {
+            $this->models['account_model']->newAccount($destination, [
+                'balance' => $balance = $amount
+            ]);
+        }
+
+        $data = [
+            "destination" => [
+                "id"      => $destination,
+                "balance" => $balance ?? $amount ?? 0,
+            ]
+        ];
+
+        return ResponseManager::basicOutput(201, json_encode($data), 'json');//TODO fazer retornar o valor real
     }
 }

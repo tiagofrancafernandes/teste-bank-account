@@ -13,26 +13,10 @@ class ResponseManager
 
     public static function responseType($data, string $response_type = 'json', int $http_code = 200)
     {
-        $valid_types = [
-            'json' => [
-                'mime' => 'application/json',
-            ],
-            'html' => [
-                'mime' => 'text/html',
-            ],
-            'text' => [
-                'mime' => 'text/plain',
-            ],
-        ];
+        self::setMimeTipe($response_type);
 
         $http_code = self::httpCode($http_code)['code'] ?? 500;
 
-        $response_type = in_array($response_type, array_keys($valid_types))
-                        ? $response_type : 'json';
-
-        $mime_type = $valid_types[$response_type]['mime'] ?? 'application/json';
-
-        header("Content-Type: ". $mime_type);
         http_response_code($http_code);
 
         if($response_type == 'json')
@@ -52,9 +36,9 @@ class ResponseManager
      * @param string $abort_message_body
      * @return void
      */
-    public static function basicOutput(int $http_code, string $abort_message_body = '')
+    public static function basicOutput(int $http_code, string $abort_message_body = '', string $response_type = 'text')
     {
-        return self::abort($http_code, $abort_message_body);
+        return self::abort($http_code, $abort_message_body, $response_type);
     }
 
     /**
@@ -66,9 +50,10 @@ class ResponseManager
      * @param string $abort_message_body
      * @return void
      */
-    public static function abort(int $http_code, string $abort_message_body = '')
+    public static function abort(int $http_code, string $abort_message_body = '', string $response_type = 'text')
     {
         $http_code = self::httpCode($http_code)['code'] ?? 500;
+        self::setMimeTipe($response_type);
 
         http_response_code($http_code);
         die($abort_message_body);
@@ -131,5 +116,27 @@ class ResponseManager
 
         return $code;
 
+    }
+
+    public static function setMimeTipe(string $response_type = 'text')
+    {
+        $valid_types = [
+            'json' => [
+                'mime' => 'application/json',
+            ],
+            'html' => [
+                'mime' => 'text/html',
+            ],
+            'text' => [
+                'mime' => 'text/plain',
+            ],
+        ];
+
+        $response_type = in_array($response_type, array_keys($valid_types))
+                        ? $response_type : 'json';
+
+        $mime_type = $valid_types[$response_type]['mime'] ?? $valid_types['text']['mime'];
+
+        header("Content-Type: ". $mime_type);
     }
 }

@@ -33,12 +33,7 @@ class AccountController
      */
     public function reset(array $request_data)
     {
-        return ResponseManager::json([
-            'data'          => [
-                'reset' => true,
-            ],
-            'success'       => true,
-        ], 200);
+        return ResponseManager::basicOutput(200, 'OK');
     }
 
     /**

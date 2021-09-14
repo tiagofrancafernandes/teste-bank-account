@@ -41,6 +41,31 @@ class ResponseManager
         echo $data;die;
     }
 
+    /**
+     * abort method
+     *
+     * Return code and die
+     *
+     * Alias to ResponseManager::abort
+     *
+     * @param integer $http_code
+     * @param string $abort_message_body
+     * @return void
+     */
+    public static function basicOutput(int $http_code, string $abort_message_body = '')
+    {
+        return self::abort($http_code, $abort_message_body);
+    }
+
+    /**
+     * abort method
+     *
+     * Return code and die
+     *
+     * @param integer $http_code
+     * @param string $abort_message_body
+     * @return void
+     */
     public static function abort(int $http_code, string $abort_message_body = '')
     {
         $http_code = self::httpCode($http_code)['code'] ?? 500;

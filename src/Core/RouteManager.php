@@ -8,7 +8,7 @@ class RouteManager
     {
         $routes     = $this->getRoutesData();
         $server     = $request_data['server'];
-        $request    = $request_data['request'];
+        $inputs     = $request_data['inputs'];
 
         $path  = $server['PATH_INFO'] ?? '/';
 
@@ -36,7 +36,7 @@ class RouteManager
                 'error_message' => "Invalid route!",
             ], 500);
 
-        return (new $route[0]())->{$route[1]}($route[2] ?? null);
+        return (new $route[0]())->{$route[1]}($request_data, $route[2] ?? null);
     }
 
     public function getRoutesData()

@@ -41,12 +41,12 @@ class ResponseManager
         echo $data;die;
     }
 
-    public static function abort(int $http_code)
+    public static function abort(int $http_code, string $abort_message_body = '')
     {
         $http_code = self::httpCode($http_code)['code'] ?? 500;
 
         http_response_code($http_code);
-        die;
+        die($abort_message_body);
     }
 
     public static function httpCode(int $http_code, bool $code_description = false)

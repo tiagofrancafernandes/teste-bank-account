@@ -2,6 +2,8 @@
 
 namespace Tiago\EbanxTeste\Controllers;
 
+use Tiago\EbanxTeste\Core\ResponseManager;
+
 class AccountController
 {
     /**
@@ -13,15 +15,11 @@ class AccountController
      */
     public function index()
     {
-        header('Content-Type: application/json');
-
-        http_response_code(301);
-
-        return [
+        return ResponseManager::json([
             'data' => [
                 'Hello' => 'EBANX',
             ],
-        ];
+        ], 301);
     }
 
     /**
@@ -33,12 +31,8 @@ class AccountController
      */
     public function reset()
     {
-        header('Content-Type: application/json');
-
-        http_response_code(404);
-
-        return [
+        return ResponseManager::json([
             'reset' => true,
-        ];
+        ], 200);
     }
 }

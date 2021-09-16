@@ -59,12 +59,15 @@ class AccountController
         if(!$account_id || !is_numeric($account_id) || $account_id == 1234)
             return ResponseManager::basicOutput(404, 0);
 
-        return ResponseManager::json([
-            'data'          => [
-                'balance' => rand(10, 100),//TODO
-            ],
-            'success'       => true,
-        ], 200);
+        $account = $this->models['account_model']->getAccountById($account_id);
+
+        if($account)
+        {
+            $balance = $account['balance'] ?? 0;
+            return ResponseManager::basicOutput(200, $balance);
+        }
+        else
+            return ResponseManager::basicOutput(404, 0);
     }
 
     /**

@@ -95,41 +95,46 @@ class AccountController
         )
             return ResponseManager::basicOutput(406);
 
-        $account = $this->models['account_model']->getAccountById($destination);
+        $account = $this->models['account_model']->getAccountById($destination) ?? [];
 
-        if($account)
-        {
-            $operation_result = $this->runOperationByType($destination, $type, $account, $amount);
-            $balance = $operation_result['balance'] ?? 0;
-        }
-        else
-        {
-            $this->models['account_model']->newAccount($destination, [
-                'balance' => $balance = $amount
-            ]);
-        }
-
-        $data = [
-            "destination" => [
-                "id"      => $destination,
-                "balance" => $balance ?? $amount ?? 0,
-            ]
-        ];
-
-        return ResponseManager::basicOutput(201, json_encode($data), 'json');//TODO fazer retornar o valor real
+        return $this->runOperationByType($destination, $type, $account, $amount);
     }
 
     protected function runOperationByType(int $account_id, string $type, array $account, int $amount)
     {
         $operation_types = [
             'deposit',
+            'withdraw',
         ];
 
-        if(!in_array($type, $operation_types))
-            return [];
+        if(!in_array($type, $operation_types) || !$account_id)
+            return ResponseManager::basicOutput(406);
 
-        $account['balance'] = ($account['balance'] ?? 0) + $amount;
-        $this->models['account_model']->updateAccount($account_id, $account);
-        return $account;
+        if($type == 'deposit')
+            return $this->depositOperation($account_id, $type, $account, $amount);
+    }
+
+    private function depositOperation(int $account_id, string $type, array $account, int $amount)
+    {
+        if($account)
+        {
+            $balance = $account['balance'] = ($account['balance'] ?? 0) + $amount;
+            $this->models['account_model']->updateAccount($account_id, $account);
+        }
+        else
+        {
+            $this->models['account_model']->newAccount($account_id, [
+                'balance' => $balance = $amount
+            ]);
+        }
+
+        $data = [
+            "destination" => [
+                "id"      => $account_id,
+                "balance" => $balance ?? $amount ?? 0,
+            ]
+        ];
+
+        return ResponseManager::basicOutput(201, json_encode($data), 'json');
     }
 }

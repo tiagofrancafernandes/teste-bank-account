@@ -1,4 +1,5 @@
-### - [Endpoints](endpoints.md)
+### - [Readme](README.md)
+### - Endpoints
 ### - [Rest test config](requests-expects.http)
 ### - [ipkiss.pragmazero.com](http://ipkiss.pragmazero.com)
 

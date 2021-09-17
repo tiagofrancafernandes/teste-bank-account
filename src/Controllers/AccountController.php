@@ -82,8 +82,18 @@ class AccountController
         $body = $request_data['body']->json() ?? [];
 
         $type        = $body['type']        ?? null;
-        $destination = $body['destination'] ?? null;
         $amount      = $body['amount']      ?? null;
+
+        $destination = null;
+
+        if($type)
+        {
+            $destination = $type == 'withdraw' ? ($body['origin'] ?? null) : $destination;
+
+            if(!$destination)
+                $destination = !$destination && $type == 'deposit'
+                                ? ($body['destination']  ?? null) : $destination;
+        }
 
         if(
             !$type
@@ -112,6 +122,9 @@ class AccountController
 
         if($type == 'deposit')
             return $this->depositOperation($account_id, $type, $account, $amount);
+
+        if($type == 'withdraw')
+            return $this->withdrawOperation($account_id, $type, $account, $amount);
     }
 
     private function depositOperation(int $account_id, string $type, array $account, int $amount)
@@ -130,7 +143,29 @@ class AccountController
 
         $data = [
             "destination" => [
-                "id"      => $account_id,
+                "id"      => (string) $account_id, //Cast string para compliance
+                "balance" => $balance ?? $amount ?? 0,
+            ]
+        ];
+
+        return ResponseManager::basicOutput(201, json_encode($data), 'json');
+    }
+
+    private function withdrawOperation(int $account_id, string $type, array $account, int $amount)
+    {
+        if($account)
+        {
+            $balance = $account['balance'] = ($account['balance'] ?? 0) - $amount;
+            $this->models['account_model']->updateAccount($account_id, $account);
+        }
+        else
+        {
+            return ResponseManager::basicOutput(404, 0);
+        }
+
+        $data = [
+            "origin" => [
+                "id"      => (string) $account_id, //Cast string para compliance
                 "balance" => $balance ?? $amount ?? 0,
             ]
         ];

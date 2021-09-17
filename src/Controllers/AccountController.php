@@ -86,13 +86,21 @@ class AccountController
 
         $destination = null;
 
-        if($type)
-        {
-            $destination = $type == 'withdraw' ? ($body['origin'] ?? null) : $destination;
+        if(!$type)
+            return ResponseManager::basicOutput(406, 'Missing action type');
 
-            if(!$destination)
-                $destination = !$destination && $type == 'deposit'
-                                ? ($body['destination']  ?? null) : $destination;
+        if($type == 'withdraw')
+            $destination = $body['origin'] ?? null;
+
+        if($type == 'deposit')
+            $destination = $body['destination']  ?? null;
+
+        if($type == 'transfer')
+        {
+            if(!$body['origin'] ?? null)
+                return ResponseManager::basicOutput(406, 'Missing origin account');
+
+            $destination = $body['destination'] ?? null;
         }
 
         if(
@@ -107,27 +115,46 @@ class AccountController
 
         $account = $this->models['account_model']->getAccountById($destination) ?? [];
 
-        return $this->runOperationByType($destination, $type, $account, $amount);
+        return $this->runOperationByType($body, $destination, $type, $account, $amount);
     }
 
-    protected function runOperationByType(int $account_id, string $type, array $account, int $amount)
+    protected function runOperationByType(array $body, int $account_id, string $type, array $account, int $amount)
     {
         $operation_types = [
             'deposit',
             'withdraw',
+            'transfer',
         ];
 
         if(!in_array($type, $operation_types) || !$account_id)
             return ResponseManager::basicOutput(406);
 
         if($type == 'deposit')
-            return $this->depositOperation($account_id, $type, $account, $amount);
+            return $this->depositOperation($account_id, $account, $amount);
 
         if($type == 'withdraw')
-            return $this->withdrawOperation($account_id, $type, $account, $amount);
+            return $this->withdrawOperation($account_id, $account, $amount);
+
+        if($type == 'transfer')
+        {
+            $destination_account_id = $body['destination']  ?? null;
+            $origin_account_id      = $body['origin']       ?? null;
+
+            if(!$destination_account_id)
+                return ResponseManager::basicOutput(406);
+
+            return $this->transferOperation($body, $origin_account_id, $destination_account_id, $amount);
+        }
     }
 
-    private function depositOperation(int $account_id, string $type, array $account, int $amount)
+    private function depositOperation(int $account_id, array $account, int $amount)
+    {
+        $data = $this->depositProcessOperation($account_id, $account, $amount);
+
+        return ResponseManager::basicOutput(201, json_encode($data), 'json');
+    }
+
+    private function depositProcessOperation(int $account_id, array $account, int $amount)
     {
         if($account)
         {
@@ -141,17 +168,15 @@ class AccountController
             ]);
         }
 
-        $data = [
+        return $data = [
             "destination" => [
                 "id"      => (string) $account_id, //Cast string para compliance
                 "balance" => $balance ?? $amount ?? 0,
             ]
         ];
-
-        return ResponseManager::basicOutput(201, json_encode($data), 'json');
     }
 
-    private function withdrawOperation(int $account_id, string $type, array $account, int $amount)
+    private function withdrawOperation(int $account_id, array $account, int $amount)
     {
         if($account)
         {
@@ -168,6 +193,38 @@ class AccountController
                 "id"      => (string) $account_id, //Cast string para compliance
                 "balance" => $balance ?? $amount ?? 0,
             ]
+        ];
+
+        return ResponseManager::basicOutput(201, json_encode($data), 'json');
+    }
+
+    private function transferOperation(array $body, int $origin_account_id, int $destination_account_id, int $amount)
+    {
+        $origin_account      = $account = $this->models['account_model']->getAccountById($origin_account_id)      ?? [];
+        $destination_account = $account = $this->models['account_model']->getAccountById($destination_account_id) ?? [];
+
+        if($origin_account)
+        {
+            $origin_account_balance = $origin_account['balance'] = ($origin_account['balance'] ?? 0) - $amount;
+            $this->models['account_model']->updateAccount($origin_account_id, $origin_account);
+        }
+        else
+        {
+            return ResponseManager::basicOutput(404, 0);
+        }
+
+        $deposit_operation_data      = $this->depositProcessOperation($destination_account_id, $destination_account, $amount);
+        $destination_account_balance = $deposit_operation_data['destination']['balance'] ?? $amount;
+
+        $data = [
+            "origin" => [
+                "id"      => (string) $origin_account_id,
+                "balance" => $origin_account_balance ?? $amount ?? 0,
+            ],
+            "destination" => [
+                "id"      => (string) $destination_account_id,
+                "balance" => $destination_account_balance ?? $amount ?? 0,
+            ],
         ];
 
         return ResponseManager::basicOutput(201, json_encode($data), 'json');

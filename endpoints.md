@@ -2,9 +2,11 @@
 
 
 ----
-# Reset state before starting tests
+### Reset state before starting tests
 
+```http
 POST /reset
+```
 
 
 ```sh
@@ -14,9 +16,11 @@ POST /reset
 
 
 ----
-# Get balance for non-existing account
+### Get balance for non-existing account
 
+```http
 GET /balance?account_id=1234
+```
 
 
 ```sh
@@ -26,9 +30,11 @@ GET /balance?account_id=1234
 
 
 ----
-# Create account with initial balance
+### Create account with initial balance
 
+```http
 POST /event {"type":"deposit", "destination":"100", "amount":10}
+```
 
 
 ```sh
@@ -38,9 +44,11 @@ POST /event {"type":"deposit", "destination":"100", "amount":10}
 
 
 ----
-# Deposit into existing account
+### Deposit into existing account
 
+```http
 POST /event {"type":"deposit", "destination":"100", "amount":10}
+```
 
 
 ```sh
@@ -50,9 +58,11 @@ POST /event {"type":"deposit", "destination":"100", "amount":10}
 
 
 ----
-# Get balance for existing account
+### Get balance for existing account
 
+```http
 GET /balance?account_id=100
+```
 
 ```sh
 # Expected
@@ -60,9 +70,11 @@ GET /balance?account_id=100
 ```
 
 ----
-# Withdraw from non-existing account
+### Withdraw from non-existing account
 
+```http
 POST /event {"type":"withdraw", "origin":"200", "amount":10}
+```
 
 ```sh
 # Expected
@@ -70,9 +82,11 @@ POST /event {"type":"withdraw", "origin":"200", "amount":10}
 ```
 
 ----
-# Withdraw from existing account
+### Withdraw from existing account
 
+```http
 POST /event {"type":"withdraw", "origin":"100", "amount":5}
+```
 
 ```sh
 # Expected
@@ -80,9 +94,11 @@ POST /event {"type":"withdraw", "origin":"100", "amount":5}
 ```
 
 ----
-# Transfer from existing account
+### Transfer from existing account
 
+```http
 POST /event {"type":"transfer", "origin":"100", "amount":15, "destination":"300"}
+```
 
 ```sh
 # Expected
@@ -90,9 +106,11 @@ POST /event {"type":"transfer", "origin":"100", "amount":15, "destination":"300"
 ```
 
 ----
-# Transfer from non-existing account
+### Transfer from non-existing account
 
+```http
 POST /event {"type":"transfer", "origin":"200", "amount":15, "destination":"300"}
+```
 
 ```sh
 # Expected

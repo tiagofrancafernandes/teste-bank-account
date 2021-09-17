@@ -2,8 +2,8 @@
 Teste para vaga no EBANX
 
 ### - [Endpoints](endpoints.md)
-
 ### - [Rest test config](requests-expects.http)
+### - [ipkiss.pragmazero.com](http://ipkiss.pragmazero.com)
 
 ## Job test assignment
 
@@ -17,7 +17,7 @@ Teste para vaga no EBANX
 > Implement the following API in the simplest way you can.
 > Durability *IS NOT* a requirement, that is, you don’t need to use a database or persistence mechanism.
 > The main goal of this exercise is to create a common ground to conduct the interview process.
-> The API consists of two endpoints, GET /balance, and POST /event. Using your favorite programming language, build a system that can > handle those requests, publish it on the internet, and test it using our [automated test suite](ipkiss.pragmazero.com).
+> The API consists of two endpoints, GET /balance, and POST /event. Using your favorite programming language, build a system that can > handle those requests, publish it on the internet, and test it using our [automated test suite](http://ipkiss.pragmazero.com).
 >
 > After getting green light from our test suite, please submit bellow the source code for your solution to continue the interview > process.
 >

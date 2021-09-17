@@ -9,8 +9,8 @@
 
 ## API server base URL
 # Sample:
-# @API_BASE_HOST=http://aws-lab-1.tiagofranca.com:8004
-@API_BASE_HOST=http://0.0.0.0:8006
+# @API_BASE_HOST=http://aws-lab-1.tiagofranca.com
+@API_BASE_HOST=http://url-to-api-server:8006
 ###################################################
 
 

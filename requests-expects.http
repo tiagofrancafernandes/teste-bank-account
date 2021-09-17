@@ -1,0 +1,113 @@
+### Extensão REST Client v0.24.5 (VSCode)
+### ID: humao.rest-client
+
+###################################################
+
+
+###################################################
+## ENVS
+
+## API server base URL
+@API_BASE_HOST=http://api_server_base_url.net:8006
+###################################################
+
+
+
+########################################
+# Reset state before starting tests
+####
+
+POST {{API_BASE_HOST}}/reset
+
+# Expected:
+# 200 OK
+
+
+########################################
+# Get balance for non-existing account
+####
+
+GET {{API_BASE_HOST}}/balance?account_id=1234
+
+# Expected:
+# 404 0
+
+
+########################################
+# Create account with initial balance
+####
+
+POST {{API_BASE_HOST}}/event HTTP/1.1
+content-type: application/json
+
+{"type":"deposit", "destination":"100", "amount":10}
+
+# Expected:
+# 201 {"destination": {"id":"100", "balance":10}}
+
+
+########################################
+# Deposit into existing account
+####
+POST {{API_BASE_HOST}}/event HTTP/1.1
+content-type: application/json
+
+{"type":"deposit", "destination":"100", "amount":10}
+
+# Expected:
+# 201 {"destination": {"id":"100", "balance":20}}
+
+
+########################################
+# Get balance for existing account
+####
+
+GET {{API_BASE_HOST}}/balance?account_id=100
+
+# Expected:
+# 200 20
+
+########################################
+# Withdraw from non-existing account
+####
+POST {{API_BASE_HOST}}/event HTTP/1.1
+content-type: application/json
+
+{"type":"withdraw", "origin":"200", "amount":10}
+
+# Expected:
+# 404 0
+
+########################################
+# Withdraw from existing account
+####
+POST {{API_BASE_HOST}}/event HTTP/1.1
+content-type: application/json
+
+{"type":"withdraw", "origin":"100", "amount":5}
+
+# Expected:
+# 201 {"origin": {"id":"100", "balance":15}}
+
+########################################
+# Transfer from existing account
+####
+POST {{API_BASE_HOST}}/event HTTP/1.1
+content-type: application/json
+
+{"type":"transfer", "origin":"100", "amount":15, "destination":"300"}
+
+# Expected:
+# 201 {"origin": {"id":"100", "balance":0}, "destination": {"id":"300", "balance":15}}
+
+########################################
+# Transfer from non-existing account
+####
+POST {{API_BASE_HOST}}/event HTTP/1.1
+content-type: application/json
+
+{"type":"transfer", "origin":"200", "amount":15, "destination":"300"}
+
+# Expected:
+# 404 0
+

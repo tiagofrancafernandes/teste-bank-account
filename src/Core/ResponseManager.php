@@ -139,4 +139,11 @@ class ResponseManager
 
         header("Content-Type: ". $mime_type);
     }
+
+    public static function downloadText($content, $file_name_to_downoad, $mime_type = 'text/plain', $http_code = 200)
+    {
+        header("Content-Type: ". $mime_type);
+        header("Content-Disposition: attachment; filename={$file_name_to_downoad}");
+        return self::basicOutput($http_code, $content);
+    }
 }

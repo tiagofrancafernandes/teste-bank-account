@@ -37,4 +37,14 @@ class Account extends ModelBase
 
         $this->clearOrCreateFile();
     }
+
+    public function getAllAccounts($key = null)
+    {
+        return $this->getAllData($key);
+    }
+
+    public function getFileContent()
+    {
+        return $this->getJsonContent();
+    }
 }

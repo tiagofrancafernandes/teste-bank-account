@@ -8,7 +8,9 @@
 ## ENVS
 
 ## API server base URL
-@API_BASE_HOST=http://api_server_base_url.net:8006
+# Sample:
+# @API_BASE_HOST=http://aws-lab-1.tiagofranca.com:8004
+@API_BASE_HOST=http://0.0.0.0:8006
 ###################################################
 
 
@@ -16,7 +18,6 @@
 ########################################
 # Reset state before starting tests
 ####
-
 POST {{API_BASE_HOST}}/reset
 
 # Expected:
@@ -26,7 +27,6 @@ POST {{API_BASE_HOST}}/reset
 ########################################
 # Get balance for non-existing account
 ####
-
 GET {{API_BASE_HOST}}/balance?account_id=1234
 
 # Expected:
@@ -36,7 +36,6 @@ GET {{API_BASE_HOST}}/balance?account_id=1234
 ########################################
 # Create account with initial balance
 ####
-
 POST {{API_BASE_HOST}}/event HTTP/1.1
 content-type: application/json
 
@@ -61,7 +60,6 @@ content-type: application/json
 ########################################
 # Get balance for existing account
 ####
-
 GET {{API_BASE_HOST}}/balance?account_id=100
 
 # Expected:
@@ -110,4 +108,13 @@ content-type: application/json
 
 # Expected:
 # 404 0
+
+########################################
+# Get account list
+####
+GET {{API_BASE_HOST}}/all_accounts HTTP/1.1
+
+# Expected:
+# 200 {"data":{"accounts":{"100":{"balance":0},"300":{"balance":15}}},"success":true}
+
 

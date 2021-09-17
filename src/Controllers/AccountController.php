@@ -25,11 +25,34 @@ class AccountController
     {
         return ResponseManager::json([
             'data'          => [
-                'Hello' => 'EBANX',
+                'Hello'      => 'EBANX',
+                'sugestions' => [
+                    'GoTo_1' => "https://ipkiss.pragmazero.com/",
+                    'GoTo_2' => "GET /all_accounts",
+                    'GoTo_3' => "GET /json",
+                    'GoTo_4' => "GET /json/download",
+                    'GoTo_5' => "Coming soon...",
+                ],
             ],
             'success'       => true,
-            'error_message' => "Route not found!",
-        ], 301);
+        ], 200);
+    }
+
+    /**
+     * @method mixed allAccounts()
+     *
+     * @route GET /all_accounts
+     *
+     * @return void
+     */
+    public function allAccounts(array $request_data)
+    {
+        return ResponseManager::json([
+            'data' => [
+                'accounts' => $this->models['account_model']->getAllAccounts('accounts'),
+            ],
+            'success' => true,
+        ], 200);
     }
 
     /**
